@@ -1,9 +1,0 @@
-import {createContext,useContext,useEffect,useState} from 'react';import api from '../lib/api';
-const C=createContext(null);const demo={teacher:{name:'Alex Morgan',email:'teacher@example.com',role:'teacher'},student:{name:'Jamie Lee',email:'student@example.com',role:'student'},admin:{name:'Taylor Smith',email:'admin@example.com',role:'admin'}};
-export function AuthProvider({children}){const [user,setUser]=useState(()=>{try{return JSON.parse(localStorage.getItem('examflow_user'))}catch{return null}});const [loading,setLoading]=useState(!!localStorage.getItem('examflow_token'));const [demoMode,setDemoMode]=useState(false);
-useEffect(()=>{if(!localStorage.getItem('examflow_token')){setLoading(false);return}api.get('/auth/me').then(({data})=>setUser(data.user||data)).catch(()=>{localStorage.removeItem('examflow_token');setUser(null)}).finally(()=>setLoading(false))},[]);
-useEffect(()=>{if(user)localStorage.setItem('examflow_user',JSON.stringify(user));else localStorage.removeItem('examflow_user')},[user]);
-const login=async(email,password,role)=>{try{const {data}=await api.post('/auth/login',{email,password});const token=data.token||data.accessToken;if(token)localStorage.setItem('examflow_token',token);const u=data.user||data;setDemoMode(false);setUser(u);return u}catch(e){if(!e.response||e.response.status>=500){const u={...demo[role||'student'],email};setDemoMode(true);setUser(u);return u}throw new Error(e.response?.data?.message||'Login failed')}};
-const register=payload=>api.post('/auth/register',payload);const logout=async()=>{try{if(!demoMode)await api.post('/auth/logout')}catch{}localStorage.removeItem('examflow_token');localStorage.removeItem('examflow_user');setUser(null);setDemoMode(false)};
-return <C.Provider value={{user,loading,demoMode,login,register,logout}}>{children}</C.Provider>}
-export const useAuth=()=>useContext(C);
