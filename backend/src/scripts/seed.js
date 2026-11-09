@@ -98,7 +98,86 @@ async function seed() {
       createdBy: teacher._id
     });
 
-    console.log('✅ 4 Sample questions created');
+    const upcomingQuestions = await Question.create([
+      {
+        questionText: 'Which array method returns a new array containing items that pass a test?',
+        questionType: 'MCQ',
+        options: ['map', 'filter', 'forEach', 'findIndex'],
+        correctAnswer: 'filter',
+        marks: 2,
+        difficulty: 'easy',
+        category: 'JavaScript',
+        explanation: 'Array.filter returns a new array containing items that pass the callback test.',
+        createdBy: teacher._id
+      },
+      {
+        questionText: 'What does JSON.stringify() do?',
+        questionType: 'MCQ',
+        options: [
+          'Converts a JavaScript value to a JSON string',
+          'Parses a JSON string into an object',
+          'Validates a JavaScript function',
+          'Clones an object with its prototype'
+        ],
+        correctAnswer: 'Converts a JavaScript value to a JSON string',
+        marks: 2,
+        difficulty: 'easy',
+        category: 'JavaScript',
+        explanation: 'JSON.stringify serializes a JavaScript value as a JSON string.',
+        createdBy: teacher._id
+      },
+      {
+        questionText: 'Which MongoDB method finds documents that match a filter?',
+        questionType: 'MCQ',
+        options: ['find()', 'insertOne()', 'updateOne()', 'deleteOne()'],
+        correctAnswer: 'find()',
+        marks: 2,
+        difficulty: 'easy',
+        category: 'Databases',
+        explanation: 'The find method returns documents that match its query filter.',
+        createdBy: teacher._id
+      },
+      {
+        questionText: 'A primary key uniquely identifies each row in a relational table.',
+        questionType: 'TRUE_FALSE',
+        options: ['true', 'false'],
+        correctAnswer: 'true',
+        marks: 2,
+        difficulty: 'easy',
+        category: 'Databases',
+        explanation: 'Primary key values uniquely identify rows in a table.',
+        createdBy: teacher._id
+      },
+      {
+        questionText: 'Which HTTP method is typically used to retrieve a resource without changing server state?',
+        questionType: 'MCQ',
+        options: ['GET', 'POST', 'PATCH', 'DELETE'],
+        correctAnswer: 'GET',
+        marks: 2,
+        difficulty: 'easy',
+        category: 'Networking',
+        explanation: 'GET requests retrieve a representation of a resource and are intended to be safe.',
+        createdBy: teacher._id
+      },
+      {
+        questionText: 'What does DNS primarily translate?',
+        questionType: 'MCQ',
+        options: [
+          'Domain names into IP addresses',
+          'HTTP requests into HTML',
+          'Passwords into encryption keys',
+          'MAC addresses into port numbers'
+        ],
+        correctAnswer: 'Domain names into IP addresses',
+        marks: 2,
+        difficulty: 'easy',
+        category: 'Networking',
+        explanation: 'DNS resolves human-readable domain names to IP addresses.',
+        createdBy: teacher._id
+      }
+    ]);
+
+    console.log('✅ 10 sample questions created');
 
     // 3. Create Sample Examination
     console.log('Creating sample examination...');
@@ -174,6 +253,74 @@ async function seed() {
     });
 
     console.log(`✅ Sample examination created: "${exam.title}" (Total marks: ${exam.totalMarks})`);
+
+    const upcomingExamSpecs = [
+      {
+        title: 'JavaScript Fundamentals',
+        description: 'A short assessment on JavaScript arrays and JSON.',
+        subject: 'JavaScript',
+        questionIndexes: [0, 1],
+        daysUntilStart: 1
+      },
+      {
+        title: 'Database Essentials',
+        description: 'Review document queries and relational database keys.',
+        subject: 'Databases',
+        questionIndexes: [2, 3],
+        daysUntilStart: 3
+      },
+      {
+        title: 'Web Networking Basics',
+        description: 'Test your understanding of HTTP and DNS fundamentals.',
+        subject: 'Networking',
+        questionIndexes: [4, 5],
+        daysUntilStart: 7
+      }
+    ];
+    const scheduleBase = Date.now();
+
+    for (const spec of upcomingExamSpecs) {
+      const scheduledStart = new Date(
+        scheduleBase + spec.daysUntilStart * 24 * 60 * 60 * 1000
+      );
+      const scheduledEnd = new Date(scheduledStart.getTime() + 2 * 60 * 60 * 1000);
+      const questions = spec.questionIndexes.map((questionIndex, index) => {
+        const question = upcomingQuestions[questionIndex];
+        return {
+          questionId: question._id,
+          questionText: question.questionText,
+          questionType: question.questionType,
+          options: question.options,
+          correctAnswer: question.correctAnswer,
+          acceptedAnswers: question.acceptedAnswers,
+          marks: question.marks,
+          negativeMarks: question.negativeMarks,
+          explanation: question.explanation,
+          order: index + 1
+        };
+      });
+
+      const upcomingExam = await Examination.create({
+        title: spec.title,
+        description: spec.description,
+        subject: spec.subject,
+        instructions: 'Answer both questions. The examination is timed.',
+        duration: 30,
+        passingMarks: 2,
+        negativeMarkingEnabled: false,
+        shuffleQuestions: false,
+        startTime: scheduledStart,
+        endTime: scheduledEnd,
+        assignedStudents: [],
+        resultPublicationMode: 'manual',
+        resultsPublished: false,
+        status: 'scheduled',
+        createdBy: teacher._id,
+        questions
+      });
+      console.log(`✅ Upcoming examination created: "${upcomingExam.title}"`);
+    }
+
     console.log('🎉 Seed completed successfully!');
   } catch (error) {
     console.error('❌ Seed failed:', error);
@@ -183,4 +330,3 @@ async function seed() {
 }
 
 seed();
-

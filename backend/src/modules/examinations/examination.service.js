@@ -129,15 +129,49 @@ class ExaminationService {
    * Get examination by ID
    */
   async getExaminationById(id, user) {
-    const exam = await assertOwnership(Examination, id, user._id, {
-      allowAdmin: true,
-      userRole: user.role,
-      populate: { path: 'createdBy', select: 'name email' }
-    });
+    let exam;
+    if (user.role === 'student') {
+      exam = await Examination.findOne({
+        _id: id,
+        status: { $in: ['scheduled', 'live', 'completed'] },
+        $or: [
+          { assignedStudents: { $size: 0 } },
+          { assignedStudents: user._id }
+        ]
+      }).populate({ path: 'createdBy', select: 'name email' });
+
+      if (!exam) {
+        const error = new Error('Resource not found');
+        error.statusCode = 404;
+        error.code = 'NOT_FOUND';
+        throw error;
+      }
+    } else {
+      exam = await assertOwnership(Examination, id, user._id, {
+        allowAdmin: true,
+        userRole: user.role,
+        populate: { path: 'createdBy', select: 'name email' }
+      });
+    }
 
     const examJson = exam.toJSON();
 
     if (user.role === 'student') {
+      const studentAttempt = await Attempt.findOne({
+        examinationId: exam._id,
+        studentId: user._id
+      });
+      const now = new Date();
+
+      examJson.studentStatus = studentAttempt
+        ? studentAttempt.status
+        : now < exam.startTime
+          ? 'upcoming'
+          : now > exam.endTime
+            ? 'missed'
+            : 'eligible';
+      examJson.attemptId = studentAttempt ? studentAttempt._id : null;
+
       return this._sanitizeExamForStudent(examJson);
     }
 
@@ -310,4 +344,3 @@ class ExaminationService {
 }
 
 module.exports = new ExaminationService();
-
