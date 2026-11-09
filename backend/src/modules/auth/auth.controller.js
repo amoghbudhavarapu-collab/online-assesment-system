@@ -20,6 +20,9 @@ class AuthController {
       res.cookie(COOKIE_NAME, result.refreshToken, getCookieOptions());
       return res.status(201).json({
         success: true,
+        token: result.accessToken,
+        accessToken: result.accessToken,
+        user: result.user,
         data: {
           user: result.user,
           accessToken: result.accessToken
@@ -36,6 +39,9 @@ class AuthController {
       res.cookie(COOKIE_NAME, result.refreshToken, getCookieOptions());
       return res.status(200).json({
         success: true,
+        token: result.accessToken,
+        accessToken: result.accessToken,
+        user: result.user,
         data: {
           user: result.user,
           accessToken: result.accessToken
@@ -53,6 +59,9 @@ class AuthController {
       res.cookie(COOKIE_NAME, result.refreshToken, getCookieOptions());
       return res.status(200).json({
         success: true,
+        token: result.accessToken,
+        accessToken: result.accessToken,
+        user: result.user,
         data: {
           user: result.user,
           accessToken: result.accessToken
@@ -70,6 +79,7 @@ class AuthController {
       res.clearCookie(COOKIE_NAME, getCookieOptions());
       return res.status(200).json({
         success: true,
+        message: 'Logged out successfully',
         data: {
           message: 'Logged out successfully'
         }
@@ -83,6 +93,7 @@ class AuthController {
     try {
       return res.status(200).json({
         success: true,
+        user: req.user,
         data: req.user
       });
     } catch (error) {
