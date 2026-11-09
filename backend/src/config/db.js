@@ -7,12 +7,14 @@ async function connectDB() {
   if (isConnected) return;
 
   try {
-    const conn = await mongoose.connect(env.MONGODB_URI);
+    const conn = await mongoose.connect(env.MONGODB_URI, {
+      serverSelectionTimeoutMS: 5000
+    });
     isConnected = true;
     console.log(`✅ MongoDB connected: ${conn.connection.host}`);
   } catch (error) {
-    console.error('❌ MongoDB connection error:', error.message);
-    process.exit(1);
+    console.warn(`⚠️ MongoDB connection warning: ${error.message}`);
+    console.warn('👉 If MongoDB is not yet running locally, please start your local MongoDB service or set a MongoDB Atlas MONGODB_URI in backend/.env');
   }
 }
 
@@ -36,3 +38,4 @@ module.exports = {
   disconnectDB,
   isDBReady
 };
+

@@ -33,3 +33,4 @@ function validate(schema, target = 'body') {
 }
 
 module.exports = { validate };
+

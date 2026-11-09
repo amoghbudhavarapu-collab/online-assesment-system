@@ -15,3 +15,4 @@ function safeCompare(a, b) {
 }
 
 module.exports = { safeCompare };
+

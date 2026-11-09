@@ -1,0 +1,50 @@
+{
+  "id": "e63a1312-321b-4392-a169-assessment-env",
+  "name": "Online Examination System Environment",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "examinationId",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "questionId",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "attemptId",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "userId",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}
+
