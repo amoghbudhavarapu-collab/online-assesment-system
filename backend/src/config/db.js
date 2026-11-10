@@ -2,19 +2,41 @@ const mongoose = require('mongoose');
 const { env } = require('./env');
 
 let isConnected = false;
+let connectingPromise = null;
 
 async function connectDB() {
   if (isConnected) return;
+  if (connectingPromise) return connectingPromise;
+
+  connectingPromise = (async () => {
+    const maxRetries = 5;
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const conn = await mongoose.connect(env.MONGODB_URI, {
+          serverSelectionTimeoutMS: 30000,
+          socketTimeoutMS: 45000
+        });
+        isConnected = true;
+        console.log(`✅ MongoDB connected: ${conn.connection.host}`);
+        return;
+      } catch (error) {
+        console.warn(`⚠️ MongoDB connection attempt ${attempt}/${maxRetries} failed: ${error.message}`);
+        if (attempt < maxRetries) {
+          const delay = attempt * 2000;
+          console.log(`⏳ Retrying in ${delay / 1000}s...`);
+          await new Promise((res) => setTimeout(res, delay));
+        } else {
+          console.error('❌ All MongoDB connection attempts failed');
+          throw error;
+        }
+      }
+    }
+  })();
 
   try {
-    const conn = await mongoose.connect(env.MONGODB_URI, {
-      serverSelectionTimeoutMS: 5000
-    });
-    isConnected = true;
-    console.log(`✅ MongoDB connected: ${conn.connection.host}`);
-  } catch (error) {
-    console.warn(`⚠️ MongoDB connection warning: ${error.message}`);
-    console.warn('👉 If MongoDB is not yet running locally, please start your local MongoDB service or set a MongoDB Atlas MONGODB_URI in backend/.env');
+    await connectingPromise;
+  } finally {
+    connectingPromise = null;
   }
 }
 
