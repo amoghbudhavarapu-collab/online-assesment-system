@@ -2,6 +2,7 @@ const { connectDB, disconnectDB } = require('../config/db');
 const { User } = require('../modules/users/user.model');
 const { Question } = require('../modules/questions/question.model');
 const { Examination } = require('../modules/examinations/examination.model');
+const { Attempt } = require('../modules/attempts/attempt.model');
 
 async function seed() {
   console.log('🌱 Starting database seed...');
@@ -13,6 +14,7 @@ async function seed() {
     await User.deleteMany({});
     await Question.deleteMany({});
     await Examination.deleteMany({});
+    await Attempt.deleteMany({});
 
     console.log('Creating default users...');
     const admin = await User.create({
@@ -98,7 +100,7 @@ async function seed() {
       createdBy: teacher._id
     });
 
-    const upcomingQuestions = await Question.create([
+    const bankQuestions = await Question.create([
       {
         questionText: 'Which array method returns a new array containing items that pass a test?',
         questionType: 'MCQ',
@@ -174,10 +176,125 @@ async function seed() {
         category: 'Networking',
         explanation: 'DNS resolves human-readable domain names to IP addresses.',
         createdBy: teacher._id
+      },
+      {
+        questionText: 'Which React Hook is used to run side effects after a component renders?',
+        questionType: 'MCQ',
+        options: ['useState', 'useEffect', 'useMemo', 'useRef'],
+        correctAnswer: 'useEffect',
+        marks: 2,
+        difficulty: 'easy',
+        category: 'React',
+        explanation: 'useEffect runs side effects such as data fetching after render.',
+        createdBy: teacher._id
+      },
+      {
+        questionText: 'In React, which prop should uniquely identify each item in a rendered list?',
+        questionType: 'MCQ',
+        options: ['key', 'id', 'ref', 'name'],
+        correctAnswer: 'key',
+        marks: 2,
+        difficulty: 'easy',
+        category: 'React',
+        explanation: 'React uses the key prop to match list items between renders.',
+        createdBy: teacher._id
+      },
+      {
+        questionText: 'Which Node.js core module provides the HTTP server and client APIs?',
+        questionType: 'MCQ',
+        options: ['http', 'fs', 'path', 'os'],
+        correctAnswer: 'http',
+        marks: 2,
+        difficulty: 'easy',
+        category: 'Node.js',
+        explanation: 'The http module exposes createServer and request APIs.',
+        createdBy: teacher._id
+      },
+      {
+        questionText: 'Which argument lets Express middleware pass control to the next handler?',
+        questionType: 'MCQ',
+        options: ['next', 'res', 'req', 'done'],
+        correctAnswer: 'next',
+        marks: 2,
+        difficulty: 'easy',
+        category: 'Node.js',
+        explanation: 'Calling next() forwards the request to the following middleware.',
+        createdBy: teacher._id
+      },
+      {
+        questionText: 'What is the average time complexity of binary search on a sorted array?',
+        questionType: 'MCQ',
+        options: ['O(log n)', 'O(n)', 'O(n log n)', 'O(1)'],
+        correctAnswer: 'O(log n)',
+        marks: 2,
+        difficulty: 'medium',
+        category: 'DSA',
+        explanation: 'Binary search halves the search space on each comparison.',
+        createdBy: teacher._id
+      },
+      {
+        questionText: 'Which data structure follows the First-In-First-Out order?',
+        questionType: 'MCQ',
+        options: ['Stack', 'Queue', 'Tree', 'Graph'],
+        correctAnswer: 'Queue',
+        marks: 2,
+        difficulty: 'easy',
+        category: 'DSA',
+        explanation: 'A queue removes elements in the same order they were added.',
+        createdBy: teacher._id
+      },
+      {
+        questionText: 'Which SQL clause filters rows before grouping and aggregation?',
+        questionType: 'MCQ',
+        options: ['WHERE', 'HAVING', 'ORDER BY', 'GROUP BY'],
+        correctAnswer: 'WHERE',
+        marks: 2,
+        difficulty: 'medium',
+        category: 'SQL',
+        explanation: 'WHERE filters individual rows; HAVING filters aggregated groups.',
+        createdBy: teacher._id
+      },
+      {
+        questionText: 'The SQL INSERT INTO statement adds new rows to a table.',
+        questionType: 'TRUE_FALSE',
+        options: ['true', 'false'],
+        correctAnswer: 'true',
+        marks: 2,
+        difficulty: 'easy',
+        category: 'SQL',
+        explanation: 'INSERT INTO appends new rows to an existing table.',
+        createdBy: teacher._id
+      },
+      {
+        questionText: 'Which practice best protects user passwords stored in a database?',
+        questionType: 'MCQ',
+        options: [
+          'Hashing with a unique salt',
+          'Storing them as plain text',
+          'Encoding them with Base64',
+          'Reversible symmetric encryption'
+        ],
+        correctAnswer: 'Hashing with a unique salt',
+        marks: 2,
+        difficulty: 'medium',
+        category: 'Security',
+        explanation: 'Salted password hashing makes stolen hashes hard to reverse.',
+        createdBy: teacher._id
+      },
+      {
+        questionText: 'HTTPS encrypts data in transit using TLS.',
+        questionType: 'TRUE_FALSE',
+        options: ['true', 'false'],
+        correctAnswer: 'true',
+        marks: 2,
+        difficulty: 'easy',
+        category: 'Security',
+        explanation: 'TLS provides encryption, integrity and server authentication for HTTPS.',
+        createdBy: teacher._id
       }
     ]);
 
-    console.log('✅ 10 sample questions created');
+    console.log('✅ 16 sample questions created');
 
     // 3. Create Sample Examination
     console.log('Creating sample examination...');
@@ -254,38 +371,174 @@ async function seed() {
 
     console.log(`✅ Sample examination created: "${exam.title}" (Total marks: ${exam.totalMarks})`);
 
-    const upcomingExamSpecs = [
+    const completedExamSpecs = [
       {
         title: 'JavaScript Fundamentals',
         description: 'A short assessment on JavaScript arrays and JSON.',
         subject: 'JavaScript',
         questionIndexes: [0, 1],
-        daysUntilStart: 1
+        daysAgo: 3,
+        correctCount: 2
       },
       {
         title: 'Database Essentials',
         description: 'Review document queries and relational database keys.',
         subject: 'Databases',
         questionIndexes: [2, 3],
-        daysUntilStart: 3
+        daysAgo: 5,
+        correctCount: 1
       },
       {
         title: 'Web Networking Basics',
         description: 'Test your understanding of HTTP and DNS fundamentals.',
         subject: 'Networking',
         questionIndexes: [4, 5],
-        daysUntilStart: 7
+        daysAgo: 7,
+        correctCount: 0
+      },
+      {
+        title: 'React Fundamentals Assessment',
+        description: 'Hooks and list rendering in modern React applications.',
+        subject: 'React',
+        questionIndexes: [6, 7],
+        daysAgo: 2,
+        correctCount: 2
+      },
+      {
+        title: 'SQL Query Mastery',
+        description: 'Row filtering and data modification with SQL statements.',
+        subject: 'SQL',
+        questionIndexes: [12, 13],
+        daysAgo: 4,
+        correctCount: 1
+      },
+      {
+        title: 'Cyber Security Awareness',
+        description: 'Password storage and secure transport fundamentals.',
+        subject: 'Security',
+        questionIndexes: [14, 15],
+        daysAgo: 6,
+        correctCount: 0
       }
     ];
-    const scheduleBase = Date.now();
+
+    for (const spec of completedExamSpecs) {
+      const submittedAt = new Date(Date.now() - spec.daysAgo * 24 * 60 * 60 * 1000);
+      const startedAt = new Date(submittedAt.getTime() - 20 * 60 * 1000);
+      const scheduledStart = new Date(startedAt.getTime() - 60 * 60 * 1000);
+      const scheduledEnd = new Date(scheduledStart.getTime() + 2 * 60 * 60 * 1000);
+
+      const questions = spec.questionIndexes.map((questionIndex, index) => {
+        const question = bankQuestions[questionIndex];
+        return {
+          questionId: question._id,
+          questionText: question.questionText,
+          questionType: question.questionType,
+          options: question.options,
+          correctAnswer: question.correctAnswer,
+          acceptedAnswers: question.acceptedAnswers,
+          marks: question.marks,
+          negativeMarks: question.negativeMarks,
+          explanation: question.explanation,
+          order: index + 1
+        };
+      });
+
+      const completedExam = await Examination.create({
+        title: spec.title,
+        description: spec.description,
+        subject: spec.subject,
+        instructions: 'Answer both questions. The examination is timed.',
+        duration: 30,
+        passingMarks: 2,
+        negativeMarkingEnabled: false,
+        shuffleQuestions: false,
+        startTime: scheduledStart,
+        endTime: scheduledEnd,
+        assignedStudents: [],
+        resultPublicationMode: 'manual',
+        resultsPublished: true,
+        status: 'results_published',
+        createdBy: teacher._id,
+        questions
+      });
+
+      let correctAnswers = 0;
+      let marksObtained = 0;
+      const answers = questions.map((question, index) => {
+        const isCorrect = index < spec.correctCount;
+        const selectedAnswer = isCorrect
+          ? question.correctAnswer
+          : question.options.find((option) => option !== question.correctAnswer) || 'No answer';
+
+        if (isCorrect) {
+          correctAnswers += 1;
+          marksObtained += question.marks;
+        }
+
+        return {
+          questionId: question.questionId,
+          selectedAnswer,
+          isAnswered: true,
+          isMarkedForReview: false,
+          savedAt: submittedAt,
+          isCorrect,
+          marksAwarded: isCorrect ? question.marks : 0
+        };
+      });
+
+      const totalMarks = questions.reduce((sum, question) => sum + question.marks, 0);
+
+      await Attempt.create({
+        examinationId: completedExam._id,
+        studentId: student._id,
+        answers,
+        startedAt,
+        deadlineAt: new Date(startedAt.getTime() + completedExam.duration * 60 * 1000),
+        submittedAt,
+        status: 'submitted',
+        submissionType: 'manual',
+        totalQuestions: questions.length,
+        attemptedQuestions: questions.length,
+        correctAnswers,
+        incorrectAnswers: questions.length - correctAnswers,
+        unansweredQuestions: 0,
+        marksObtained,
+        totalMarks,
+        percentage: totalMarks > 0 ? Number(((marksObtained / totalMarks) * 100).toFixed(2)) : 0,
+        resultStatus: marksObtained >= completedExam.passingMarks ? 'pass' : 'fail',
+        evaluatedAt: submittedAt
+      });
+
+      console.log(
+        `✅ Completed examination created: "${completedExam.title}" (${marksObtained}/${totalMarks}, ${
+          marksObtained >= completedExam.passingMarks ? 'pass' : 'fail'
+        })`
+      );
+    }
+
+    const upcomingExamSpecs = [
+      {
+        title: 'Node.js Backend Engineering',
+        description: 'Core modules and Express middleware behaviour.',
+        subject: 'Node.js',
+        questionIndexes: [8, 9],
+        daysUntilStart: 2
+      },
+      {
+        title: 'Data Structures & Algorithms',
+        description: 'Search complexity and core data structures.',
+        subject: 'DSA',
+        questionIndexes: [10, 11],
+        daysUntilStart: 5
+      }
+    ];
 
     for (const spec of upcomingExamSpecs) {
-      const scheduledStart = new Date(
-        scheduleBase + spec.daysUntilStart * 24 * 60 * 60 * 1000
-      );
+      const scheduledStart = new Date(Date.now() + spec.daysUntilStart * 24 * 60 * 60 * 1000);
       const scheduledEnd = new Date(scheduledStart.getTime() + 2 * 60 * 60 * 1000);
       const questions = spec.questionIndexes.map((questionIndex, index) => {
-        const question = upcomingQuestions[questionIndex];
+        const question = bankQuestions[questionIndex];
         return {
           questionId: question._id,
           questionText: question.questionText,
@@ -318,6 +571,7 @@ async function seed() {
         createdBy: teacher._id,
         questions
       });
+
       console.log(`✅ Upcoming examination created: "${upcomingExam.title}"`);
     }
 

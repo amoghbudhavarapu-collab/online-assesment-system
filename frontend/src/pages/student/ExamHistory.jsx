@@ -27,7 +27,7 @@ export default function ExamHistory() {
             {
               key: 'score',
               header: 'Score',
-              render: (a) => (a.examination?.resultsPublished || a.resultsPublished ? `${a.marksObtained} / ${a.totalMarks}` : 'Pending publication')
+              render: (a) => (a.examination?.resultsPublished || a.resultsPublished ? `${a.marksObtained} / ${a.examination?.totalMarks}` : 'Pending publication')
             },
             {
               key: 'open',
