@@ -54,13 +54,13 @@ app.use(
 
 // ── 3. CORS Configuration ──────────────────────────────────────────────
 const allowedOrigins = env.CORS_ORIGINS.split(',').map((o) => o.trim());
+const allowedPatterns = [/\.vercel\.app$/, /\.onrender\.com$/];
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps, curl, Postman)
-      if (!origin || allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      if (allowedPatterns.some((re) => re.test(origin))) return callback(null, true);
       return callback(new Error(`Origin ${origin} not allowed by CORS`));
     },
     credentials: true,
