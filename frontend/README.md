@@ -12,7 +12,7 @@ React + Vite + Tailwind CSS client for the Online Examination and Assessment Sys
 
 Access tokens are never written to `localStorage` or `sessionStorage`.
 
-## Run
+## Run Locally
 
 1. Install Node.js 18 or newer.
 2. From this folder run `npm install`.
@@ -21,3 +21,15 @@ Access tokens are never written to `localStorage` or `sessionStorage`.
 5. Run `npm run dev` and open http://localhost:5173.
 
 The Express backend must be running with CORS allowing `http://localhost:5173` and `credentials: true`.
+
+## Deploy (Vercel)
+
+Set the following environment variable in your Vercel project settings:
+
+```
+VITE_API_BASE_URL=https://online-assessment-backend.onrender.com
+```
+
+Then redeploy. The backend must also allow your frontend origin in its `CORS_ORIGINS` env var (see `backend/render.yaml`).
+
+Make sure the frontend origin matches exactly (including `https://` and no trailing slash).
