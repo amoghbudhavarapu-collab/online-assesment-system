@@ -21,6 +21,6 @@ services:
       - key: JWT_REFRESH_EXPIRES_IN
         value: 7d
       - key: CORS_ORIGINS
-        value: https://online-assesment-system-sigma.vercel.app,http://localhost:5173
+        value: https://your-frontend.vercel.app,http://localhost:5173
       - key: CLIENT_URL
-        value: https://online-assesment-system-sigma.vercel.app
+        value: https://your-frontend.vercel.app
